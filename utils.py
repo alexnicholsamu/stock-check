@@ -4,9 +4,9 @@ from bs4 import BeautifulSoup
 import os
 from datetime import date, timedelta
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
-from onnxruntime.transformers import optimizer
+
 from transformers import pipeline
-import onnxruntime as ort
+
 
 end_date = date.today()
 start_date = end_date - timedelta(days=14)
@@ -20,20 +20,20 @@ def analyze_headlines(headlines):
     tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased-finetuned-sst-2-english")
     model = AutoModelForSequenceClassification.from_pretrained("distilbert-base-uncased-finetuned-sst-2-english")
 
-    # Export the model to ONNX format
-    onnx_model_path = "model.onnx"
-    model.save_pretrained("model", export_to_onnx=True, onnx_file_path=onnx_model_path)
-
-    # Optimize the ONNX model
-    optimized_model_path = "optimized_model.onnx"
-    optimizer.optimize_model(onnx_model_path, optimized_model_path, num_heads=12, hidden_size=768)
-    # Create an ONNX runtime session
-    sess_options = ort.SessionOptions()
-    sess_options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
-    ort_session = ort.InferenceSession("optimized_model.onnx", sess_options)
+    # # Export the model to ONNX format
+    # onnx_model_path = "model.onnx"
+    # model.save_pretrained("model", export_to_onnx=True, onnx_file_path=onnx_model_path)
+    #
+    # # Optimize the ONNX model
+    # optimized_model_path = "optimized_model.onnx"
+    # optimizer.optimize_model(onnx_model_path, optimized_model_path, num_heads=12, hidden_size=768)
+    # # Create an ONNX runtime session
+    # sess_options = ort.SessionOptions()
+    # sess_options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+    # ort_session = ort.InferenceSession("optimized_model.onnx", sess_options)
 
     # Create the ONNX pipeline
-    sentiment_classifier = pipeline("sentiment-analysis", model=ort_session, tokenizer=tokenizer)
+    sentiment_classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
 
     results = []
     for headline in headlines:
