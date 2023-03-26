@@ -1,9 +1,10 @@
 import yfinance as yf
 import requests
 from bs4 import BeautifulSoup
-from transformers import pipeline
 import os
 from datetime import date, timedelta
+from transformers import TFAutoModelForSequenceClassification, AutoTokenizer
+from transformers import pipeline
 
 end_date = date.today()
 start_date = end_date - timedelta(days=14)
@@ -14,7 +15,10 @@ api_key = os.environ.get("API_KEY_FINANCIALS")
 
 
 def analyze_headlines(headlines):
-    sentiment_classifier = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
+    tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased-finetuned-sst-2-english")
+    model = TFAutoModelForSequenceClassification.from_pretrained("distilbert-base-uncased-finetuned-sst-2-english")
+
+    sentiment_classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
     results = []
     for headline in headlines:
         result = sentiment_classifier(headline)[0]
