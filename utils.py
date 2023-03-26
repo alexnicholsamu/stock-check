@@ -2,7 +2,6 @@ import yfinance as yf
 import requests
 from bs4 import BeautifulSoup
 from transformers import pipeline
-import torch
 import os
 from datetime import date, timedelta
 
@@ -15,8 +14,7 @@ api_key = os.environ.get("API_KEY_FINANCIALS")
 
 
 def analyze_headlines(headlines):
-    sentiment_classifier = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english",
-                                    device=torch.device("cuda" if torch.cuda.is_available() else "cpu"))
+    sentiment_classifier = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
     results = []
     for headline in headlines:
         result = sentiment_classifier(headline)[0]
