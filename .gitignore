@@ -3,10 +3,6 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Ignore log files and databases
 *.log
 *.sqlite
 .env
-
-# Ignore sensitive configuration files
-config.py
