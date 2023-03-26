@@ -8,3 +8,4 @@ transformers==4.27.3
 onnx==1.13.1
 onnxruntime==1.10.0
 coloredlogs==15.0.1
+sympy==1.11.1
