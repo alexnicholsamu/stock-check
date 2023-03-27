@@ -38,17 +38,17 @@ def get_ratios(stock_ticker):
     if data_ebit:
         ebit_ratio = data_ebit[0]['ebitPerRevenue']
     else:
-        return "Error fetching financial ratios"
+        return "Error fetching ratios - Stock not found"
     if data_ebitda:
         ebitda_ratio = data_ebitda[0]['ebitdaratio']
     else:
-        return "Error fetching financial ratios"
+        return "Error fetching ratios - Stock not found"
     if data_current_ratio:
         liabilities = data_current_ratio[0]['totalCurrentLiabilities']
         assets = data_current_ratio[0]['totalAssets']
         current_ratio = assets/liabilities
     else:
-        return "Error fetching financial ratios"
+        return "Error fetching ratios - Stock not found"
     return f"EBIT: {ebit_ratio:.2f}\n" \
            f"EBITDA: {ebitda_ratio:.2f}\n" \
            f"Current Ratio: {current_ratio:.2f}"
@@ -61,7 +61,7 @@ def get_eps(stock_ticker):
     if data_eps:
         return f"{data_eps[0]['eps']:.2f}"
     else:
-        return "Error fetching income statement"
+        return "Error - Stock not found"
 
 
 def get_returns(stock_ticker):
@@ -71,15 +71,15 @@ def get_returns(stock_ticker):
     if data_income:
         net_income = data_income[0]['netIncome']
     else:
-        return "Error fetching income statement"
-    url_returns = f'https://financialmodelingprep.com/api/v3/income-statement/{stock_ticker}?apikey={api_key}'
+        return "Error fetching return rates - Stock not found"
+    url_returns = f'https://financialmodelingprep.com/api/v3/balance-sheet-statement/{stock_ticker}?apikey={api_key}'
     response_returns = requests.get(url_returns)
     data_returns = response_returns.json()
     if data_returns:
-        stockholder_equity = data_income[0]['totalStockholdersEquity']
-        total_assets = data_income[0]['totalAssets']
+        stockholder_equity = data_returns[0]['totalStockholdersEquity']
+        total_assets = data_returns[0]['totalAssets']
     else:
-        return "Error fetching balance sheet"
+        return "Error fetching return rates - Stock not found"
     return f"Return on Assets: {(net_income/total_assets):.2f} \n" \
            f"Return on Equity: {(net_income/stockholder_equity):.2f} \n"
 
