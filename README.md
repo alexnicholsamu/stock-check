@@ -1,4 +1,4 @@
-# stock-check, a Stock Analysis Dashboard, by Alexander Nichols
+# stock-check, a Stock Analysis Dashboard by Alexander Nichols
 
 ## Tools used in the creation of this project:
 
@@ -18,7 +18,7 @@ and Yahoo! Finance. I also use a pretrained sentiment analysis neural network, c
 headlines and provide a sentiment score. 
 
 The licence can be found in [here](LICENSE.md), any non-default libraries/dependencies can be found in 
-[the buildpack](requirement.txt). As of 27/03/23, this can only be hosted locally through running [main](wsgi.py). 
+[the buildpack](requirement.txt). As of 27/03/23, this can only be hosted locally through running [wsgi](wsgi.py). 
 To run this locally on your machine, you'll need to provide an email, email password, and FLASK secret key to 
 the [config](config.py), as well as an API key to the aforementioned _Financial Modeling Prep API_ in 
 [utils_sentiment](utils_sentiment.py). For security reasons, store these as environmental variables in your OS
