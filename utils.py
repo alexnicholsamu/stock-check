@@ -1,71 +1,14 @@
 import yfinance as yf
 import requests
-from bs4 import BeautifulSoup
 import os
 from datetime import date, timedelta
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
-from onnxruntime.transformers import optimizer
-from transformers import pipeline
-import onnxruntime as ort
+import utils_sentiment
 
 end_date = date.today()
 start_date = end_date - timedelta(days=14)
 stock_data = {}
 stock_history = {}
-stock_headlines = {}
 api_key = os.environ.get("API_KEY_FINANCIALS")
-
-
-def analyze_headlines(headlines):
-    tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased-finetuned-sst-2-english")
-    model = AutoModelForSequenceClassification.from_pretrained("distilbert-base-uncased-finetuned-sst-2-english")
-
-    # Export the model to ONNX format
-    onnx_model_path = "model.onnx"
-    model.save_pretrained("model", export_to_onnx=True, onnx_file_path=onnx_model_path)
-
-    # Optimize the ONNX model
-    optimized_model_path = "optimized_model.onnx"
-    optimizer.optimize_model(onnx_model_path, optimized_model_path, num_heads=12, hidden_size=768)
-    # Create an ONNX runtime session
-    sess_options = ort.SessionOptions()
-    sess_options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
-    ort_session = ort.InferenceSession("optimized_model.onnx", sess_options)
-
-    # Create the ONNX pipeline
-    sentiment_classifier = pipeline("sentiment-analysis", model=ort_session, tokenizer=tokenizer)
-
-    results = []
-    for headline in headlines:
-        result = sentiment_classifier(headline)[0]
-        results.append({"headline": headline, "sentiment": result["label"], "score": result["score"]})
-    return results
-
-
-def get_headline_sentiment(stock):
-    base_url = "https://finance.yahoo.com/quote/{}?p={}".format(stock, stock)
-    page = requests.get(base_url)
-
-    soup = BeautifulSoup(page.content, "html.parser")
-    headline_elements = soup.find_all("h3", class_="Mb(5px)")
-    headlines = []
-    for element in headline_elements:
-        headlines.append(element.get_text())
-
-    sentiment_results = analyze_headlines(headlines)
-
-    stock_headlines[stock] = sentiment_results
-    recent_sentiment = 0
-    for data in stock_headlines[stock]:
-        if data['sentiment'] == 'NEGATIVE':
-            pos_neg = -1
-        else:
-            pos_neg = 1
-        recent_sentiment += pos_neg * data['score']
-    try:
-        return f"{recent_sentiment / len(stock_headlines[stock]):.2f}"
-    except ZeroDivisionError:
-        return "Error - Stock not found"
 
 
 def get_stock_history(ticker):
@@ -124,7 +67,7 @@ def get_eps(stock_ticker):
 def get_stock_data(ticker):
     return ticker + f": \n" \
                     f"Two-Week Stock History: {get_stock_history(ticker)} \n" \
-                    f"Recent Headline Sentiment: {get_headline_sentiment(ticker)} \n" \
+                    f"Recent Headline Sentiment: {utils_sentiment.get_headline_sentiment(ticker)} \n" \
                     f"{get_ratios(ticker)} \n" \
                     f"Earnings per Share: {get_eps(ticker)}"
 
