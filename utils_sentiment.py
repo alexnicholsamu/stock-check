@@ -9,6 +9,10 @@ api_key = os.environ.get("API_KEY_FINANCIALS")
 
 
 def analyze_headlines(headlines):
+    """
+    Uses pretrained distilbert sentiment analysis model to read headlines and assign them a sentiment score
+    :return: Dictionary for a certain stock, with headline, sentiment, and score labels
+    """
     tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased-finetuned-sst-2-english")
     model = TFAutoModelForSequenceClassification.from_pretrained("distilbert-base-uncased-finetuned-sst-2-english")
 
@@ -16,11 +20,15 @@ def analyze_headlines(headlines):
     results = []
     for headline in headlines:
         result = sentiment_classifier(headline)[0]
-        results.append({"headline": headline, "sentiment": result["label"], "score": result["score"]})
+        results.append({"headline": headline, "sentiment": result["label"], "score": result["score"]})  # headline could be dropped, I kept it in for interest's sake
     return results
 
 
 def get_headline_sentiment(stock):
+    """
+    Grabs headlines using yfinance and BeautifulSoup, then calculates sentiment score
+    :return: A numerical value for the recent headline sentiment -1 (most negative) <= x <= 1 (most positive)
+    """
     base_url = "https://finance.yahoo.com/quote/{}?p={}".format(stock, stock)
     page = requests.get(base_url)
 
@@ -36,11 +44,11 @@ def get_headline_sentiment(stock):
     recent_sentiment = 0
     for data in stock_headlines[stock]:
         if data['sentiment'] == 'NEGATIVE':
-            pos_neg = -1
+            pos_neg = -1  # all negative sentiments are given a value of score * -1
         else:
-            pos_neg = 1
+            pos_neg = 1  # all positive sentiment are given a value of score * 1
         recent_sentiment += pos_neg * data['score']
     try:
-        return f"{recent_sentiment / len(stock_headlines[stock]):.2f}"
+        return f"{recent_sentiment / len(stock_headlines[stock]):.2f}"  # average
     except ZeroDivisionError:
         return "Error - Stock not found"

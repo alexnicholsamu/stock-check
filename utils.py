@@ -12,19 +12,27 @@ api_key = os.environ.get("API_KEY_FINANCIALS")
 
 
 def get_stock_history(ticker):
+    """
+    Grabs data from yfinance API for stock history
+    :return: Two week difference in stock price, in both percentage and total difference
+    """
     stock = yf.Ticker(ticker)
-    stock_table = stock.history(start=start_date, end=end_date)
+    stock_table = stock.history(start=start_date, end=end_date)  # Can be edited for a longer or shorter range
     stock_history[ticker] = stock_table
     try:
         start_price = stock_history[ticker]["Open"][0]
     except IndexError:
         return "Error - Stock not found"
-    end_price = stock_history[ticker]["Close"][len(stock_history[ticker]["Close"]) - 1]
+    end_price = stock_history[ticker]["Close"][len(stock_history[ticker]["Close"]) - 1]  # Dataframe is sequential
     return "${:.2f} total difference (from {:.2f} to {:.2f}), {:.2f}% change".format(
         (end_price - start_price), start_price, end_price, (((end_price - start_price) / end_price) * 100))
 
 
 def get_ratios(stock_ticker):
+    """
+    Grabs data from Financial Modeling API ratios, income statement, and balance sheet dataframes
+    :return: Returns EBIT ratio, EBITDA ratio, and Current Ratio
+    """
     url_ebit = f'https://financialmodelingprep.com/api/v3/ratios/{stock_ticker}?apikey={api_key}'
     response_ebit = requests.get(url_ebit)
     data_ebit = response_ebit.json()
@@ -55,6 +63,10 @@ def get_ratios(stock_ticker):
 
 
 def get_eps(stock_ticker):
+    """
+    Grabs data from Financial Modeling API income statement dataframe
+    :return: Earnings Per Share
+    """
     url_eps = f'https://financialmodelingprep.com/api/v3/income-statement/{stock_ticker}?apikey={api_key}'
     response_eps = requests.get(url_eps)
     data_eps = response_eps.json()
@@ -65,16 +77,20 @@ def get_eps(stock_ticker):
 
 
 def get_returns(stock_ticker):
+    """
+    Grabs data from Financial Modeling API balance sheet and income statement dataframes
+    :return: formatted Return on Assets and Return on Equity
+    """
     url_income = f'https://financialmodelingprep.com/api/v3/income-statement/{stock_ticker}?apikey={api_key}'
     response_income = requests.get(url_income)
     data_income = response_income.json()
+    url_returns = f'https://financialmodelingprep.com/api/v3/balance-sheet-statement/{stock_ticker}?apikey={api_key}'
+    response_returns = requests.get(url_returns)
+    data_returns = response_returns.json()
     if data_income:
         net_income = data_income[0]['netIncome']
     else:
         return "Error fetching return rates - Stock not found"
-    url_returns = f'https://financialmodelingprep.com/api/v3/balance-sheet-statement/{stock_ticker}?apikey={api_key}'
-    response_returns = requests.get(url_returns)
-    data_returns = response_returns.json()
     if data_returns:
         stockholder_equity = data_returns[0]['totalStockholdersEquity']
         total_assets = data_returns[0]['totalAssets']
@@ -85,6 +101,9 @@ def get_returns(stock_ticker):
 
 
 def get_stock_data(ticker):
+    """
+    Calls all util and utils_sentiment data and formats it into one string, used as 'data' in app.py
+    """
     return ticker + f": \n" \
                     f"Two-Week Stock History: {get_stock_history(ticker)} \n" \
                     f"Recent Headline Sentiment: {utils_sentiment.get_headline_sentiment(ticker)} \n" \
@@ -94,5 +113,9 @@ def get_stock_data(ticker):
 
 
 def get_tickers(tickers):
-    ticker_list = [ticker.strip().upper() for ticker in tickers.split(',')]
+    """
+    Separate ttickers by comma, make them all uppercase, strip the spaces, and remove non-alphabetic characters
+    :return: List format of tickers, in the form of ['AAPL','GOOG', etc]
+    """
+    ticker_list = [''.join(char for char in ticker.strip().upper() if char.isalpha()) for ticker in tickers.split(',')]
     return ticker_list
