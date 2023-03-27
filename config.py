@@ -1,9 +1,7 @@
 import os
 
-# Flask configuration
 SECRET_KEY = os.environ.get("SECRET_KEY") or ""
 
-# Flask-Mail configuration
 MAIL_SERVER = "smtp.gmail.com"
 MAIL_PORT = 465
 MAIL_USE_SSL = True
