@@ -3,11 +3,14 @@ from bs4 import BeautifulSoup
 import numpy as np
 import onnxruntime as ort
 from transformers import AutoTokenizer
+import os
 
 stock_headlines = {}
 
 tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased-finetuned-sst-2-english")
-ort_session = ort.InferenceSession("model.onnx")
+script_dir = os.path.dirname(os.path.realpath(__file__))
+model_path = os.path.join(script_dir, "model.onnx")
+ort_session = ort.InferenceSession(model_path)
 
 
 def process_logits(logits):
