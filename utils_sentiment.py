@@ -9,7 +9,7 @@ stock_headlines = {}
 
 tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased-finetuned-sst-2-english")
 script_dir = os.path.dirname(os.path.realpath(__file__))
-model_path = os.path.join(script_dir, "model.onnx")
+model_path = os.path.join(script_dir, os.environ.get("MODEL_DIRECTORY"))
 ort_session = ort.InferenceSession(model_path)
 
 
