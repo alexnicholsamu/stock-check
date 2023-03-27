@@ -64,12 +64,33 @@ def get_eps(stock_ticker):
         return "Error fetching income statement"
 
 
+def get_returns(stock_ticker):
+    url_income = f'https://financialmodelingprep.com/api/v3/income-statement/{stock_ticker}?apikey={api_key}'
+    response_income = requests.get(url_income)
+    data_income = response_income.json()
+    if data_income:
+        net_income = data_income[0]['netIncome']
+    else:
+        return "Error fetching income statement"
+    url_returns = f'https://financialmodelingprep.com/api/v3/income-statement/{stock_ticker}?apikey={api_key}'
+    response_returns = requests.get(url_returns)
+    data_returns = response_returns.json()
+    if data_returns:
+        stockholder_equity = data_income[0]['totalStockholdersEquity']
+        total_assets = data_income[0]['totalAssets']
+    else:
+        return "Error fetching balance sheet"
+    return f"Return on Assets: {(net_income/total_assets):.2f} \n" \
+           f"Return on Equity: {(net_income/stockholder_equity):.2f} \n"
+
+
 def get_stock_data(ticker):
     return ticker + f": \n" \
                     f"Two-Week Stock History: {get_stock_history(ticker)} \n" \
                     f"Recent Headline Sentiment: {utils_sentiment.get_headline_sentiment(ticker)} \n" \
                     f"{get_ratios(ticker)} \n" \
-                    f"Earnings per Share: {get_eps(ticker)}"
+                    f"Earnings per Share: {get_eps(ticker)} \n" \
+                    f"{get_returns(ticker)}"
 
 
 def get_tickers(tickers):
