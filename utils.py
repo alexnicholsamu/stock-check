@@ -73,5 +73,5 @@ def get_stock_data(ticker):
 
 
 def get_tickers(tickers):
-    ticker_list = [ticker.strip() for ticker in tickers.split(',')]
+    ticker_list = [ticker.strip().upper() for ticker in tickers.split(',')]
     return ticker_list

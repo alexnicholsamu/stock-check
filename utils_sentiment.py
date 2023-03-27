@@ -1,40 +1,22 @@
-import requests
 from bs4 import BeautifulSoup
-import numpy as np
-import onnxruntime as ort
-from transformers import AutoTokenizer
 import os
+import requests
+from transformers import TFAutoModelForSequenceClassification, AutoTokenizer
+from transformers import pipeline
 
 stock_headlines = {}
-
-tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased-finetuned-sst-2-english")
-script_dir = os.path.dirname(os.path.realpath(__file__))
-model_path = os.path.join(script_dir, "model.onnx")
-ort_session = ort.InferenceSession(model_path)
-
-
-def process_logits(logits):
-    labels = ["NEGATIVE", "POSITIVE"]
-    probabilities = softmax(logits)
-    index = np.argmax(probabilities)
-    label = labels[index]
-    score = probabilities[0][index]
-    return label, score
-
-
-def softmax(logits):
-    exp_logits = np.exp(logits)
-    return exp_logits / np.sum(exp_logits, axis=1, keepdims=True)
+api_key = os.environ.get("API_KEY_FINANCIALS")
 
 
 def analyze_headlines(headlines):
+    tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased-finetuned-sst-2-english")
+    model = TFAutoModelForSequenceClassification.from_pretrained("distilbert-base-uncased-finetuned-sst-2-english")
+
+    sentiment_classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
     results = []
     for headline in headlines:
-        inputs = tokenizer(headline, return_tensors="np", padding=True, truncation=True)
-        logits = ort_session.run(None, {ort_session.get_inputs()[0].name: inputs["input_ids"],
-                                        ort_session.get_inputs()[1].name: inputs["attention_mask"]})
-        label, score = process_logits(logits)
-        results.append({"headline": headline, "sentiment": label, "score": score})
+        result = sentiment_classifier(headline)[0]
+        results.append({"headline": headline, "sentiment": result["label"], "score": result["score"]})
     return results
 
 
