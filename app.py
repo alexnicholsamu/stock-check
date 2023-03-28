@@ -1,44 +1,21 @@
 from flask import Flask, render_template, request
-from flask_mail import Mail, Message
 import config
 import utils
 
 app = Flask(__name__)
 app.config.from_object(config)
 
-mail = Mail(app)
-
-
-def send_email(data, recipient):
-    """
-    Actual sending of email
-    :param data: stock data for all entered tickers
-    :param recipient: entered email
-    """
-    subject = f"Stock Data:"
-    body = f"Data: \n" \
-           f" \n" \
-           f"{data}"
-    msg = Message(subject, recipients=[recipient], body=body)
-    mail.send(msg)
-
 
 @app.route("/", methods=["GET", "POST"])
 def dashboard():
     """
-    Mastermethod , gathers data from utils and formats it into an email to be sent
+    Master method, gathers data from utils and formats it into cards to be displayed on the dashboard
     """
-    data = ""
+    data_list = []
     if request.method == "POST":
         tickers = utils.get_tickers(request.form["ticker"])  # can deal with all upper/lower cases, spaces,
         for ticker in tickers:
             ticker_data = utils.get_stock_data(ticker)
-            ticker_data += f"\n" \
-                           f"\n" \
-                           f"\n"
-            data += ticker_data
+            data_list.append(ticker_data)
 
-        recipient = request.form["email"]
-        send_email(data, recipient)
-
-    return render_template("dashboard.html", data=data)
+    return render_template("dashboard.html", data_list=data_list)

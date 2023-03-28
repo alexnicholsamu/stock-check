@@ -57,9 +57,7 @@ def get_ratios(stock_ticker):
         current_ratio = assets/liabilities
     else:
         return "Error fetching ratios - Stock not found"
-    return f"EBIT: {ebit_ratio:.2f}\n" \
-           f"EBITDA: {ebitda_ratio:.2f}\n" \
-           f"Current Ratio: {current_ratio:.2f}"
+    return f"{ebit_ratio:.2f}", f"{ebitda_ratio:.2f}", f"{current_ratio:.2f}"
 
 
 def get_eps(stock_ticker):
@@ -96,25 +94,33 @@ def get_returns(stock_ticker):
         total_assets = data_returns[0]['totalAssets']
     else:
         return "Error fetching return rates - Stock not found"
-    return f"Return on Assets: {(net_income/total_assets):.2f} \n" \
-           f"Return on Equity: {(net_income/stockholder_equity):.2f} \n"
+    return f"{(net_income/total_assets):.2f}", f"{(net_income/stockholder_equity):.2f}"
 
 
 def get_stock_data(ticker):
     """
-    Calls all util and utils_sentiment data and formats it into one string, used as 'data' in app.py
+    Calls all util and utils_sentiment data and formats it into one dictionary, used in data_list
     """
-    return ticker + f": \n" \
-                    f"Two-Week Stock History: {get_stock_history(ticker)} \n" \
-                    f"Recent Headline Sentiment: {utils_sentiment.get_headline_sentiment(ticker)} \n" \
-                    f"{get_ratios(ticker)} \n" \
-                    f"Earnings per Share: {get_eps(ticker)} \n" \
-                    f"{get_returns(ticker)}"
+    ebit, ebitda, current = get_ratios(ticker)
+    return_on_assets, return_on_equity = get_returns(ticker)
+
+    ticker_data = {
+        "ticker": ticker,
+        "history": get_stock_history(ticker),
+        "headline_sentiment": utils_sentiment.get_headline_sentiment(ticker),
+        "ebit": ebit,
+        "ebitda": ebitda,
+        "current_ratio": current,
+        "earnings_per_share": get_eps(ticker),
+        "return_on_assets": return_on_assets,
+        "return_on_equity": return_on_equity
+    }
+    return ticker_data
 
 
 def get_tickers(tickers):
     """
-    Separate ttickers by comma, make them all uppercase, strip the spaces, and remove non-alphabetic characters
+    Separate tickers by comma, make them all uppercase, strip the spaces, and remove non-alphabetic characters
     :return: List format of tickers, in the form of ['AAPL','GOOG', etc]
     """
     ticker_list = [''.join(char for char in ticker.strip().upper() if char.isalpha()) for ticker in tickers.split(',')]

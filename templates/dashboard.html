@@ -71,6 +71,36 @@
         button:hover {
             background-color: #0056b3;
         }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.7);
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px 50px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .card-text {
+            font-size: 1rem;
+        }
+
+        .ticker-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .card-content {
+            padding-top: 10px;
+        }
+
     </style>
 </head>
 <body>
@@ -80,11 +110,28 @@
     <form action="/" method="post">
         <label for="ticker">Enter Ticker Symbol(s), separated by ','</label>
         <input type="text" id="ticker" name="ticker" required><br>
-
-        <label for="email">Enter Your Email Address</label>
-        <input type="email" id="email" name="email" required><br>
-
         <button type="submit">Submit</button>
     </form>
+
+    {% for data in data_list %}
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="ticker-title">{{ data.ticker }}</h5>
+            <div class="card-content">
+                <p class="card-text">
+                Two-Week Stock History: {{ data.history }}<br>
+                Recent Headline Sentiment: {{ data.headline_sentiment }}<br>
+                EBIT: {{ data.ebit }}<br>
+                EBITDA: {{ data.ebitda }}<br>
+                Current Ratio: {{ data.current_ratio }}<br>
+                Earnings per Share: {{ data.earnings_per_share }}<br>
+                Return on Assets: {{ data.return_on_assets }}<br>
+                Return on Equity: {{ data.return_on_equity }}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
 </body>
 </html>

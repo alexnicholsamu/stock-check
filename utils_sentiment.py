@@ -1,11 +1,9 @@
 from bs4 import BeautifulSoup
-import os
 import requests
-from transformers import TFAutoModelForSequenceClassification, AutoTokenizer
+import torch
 from transformers import pipeline
 
 stock_headlines = {}
-api_key = os.environ.get("API_KEY_FINANCIALS")
 
 
 def analyze_headlines(headlines):
@@ -13,10 +11,8 @@ def analyze_headlines(headlines):
     Uses pretrained distilbert sentiment analysis model to read headlines and assign them a sentiment score
     :return: Dictionary for a certain stock, with headline, sentiment, and score labels
     """
-    tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased-finetuned-sst-2-english")
-    model = TFAutoModelForSequenceClassification.from_pretrained("distilbert-base-uncased-finetuned-sst-2-english")
-
-    sentiment_classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
+    sentiment_classifier = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english",
+                                    device=torch.device("cuda" if torch.cuda.is_available() else "cpu"))
     results = []
     for headline in headlines:
         result = sentiment_classifier(headline)[0]
