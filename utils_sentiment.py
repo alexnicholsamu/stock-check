@@ -3,8 +3,6 @@ import requests
 import torch
 from transformers import pipeline
 
-stock_headlines = {}
-
 
 def analyze_headlines(headlines):
     """
@@ -36,15 +34,14 @@ def get_headline_sentiment(stock):
 
     sentiment_results = analyze_headlines(headlines)
 
-    stock_headlines[stock] = sentiment_results
     recent_sentiment = 0
-    for data in stock_headlines[stock]:
+    for data in sentiment_results:
         if data['sentiment'] == 'NEGATIVE':
             pos_neg = -1  # all negative sentiments are given a value of score * -1
         else:
             pos_neg = 1  # all positive sentiment are given a value of score * 1
         recent_sentiment += pos_neg * data['score']
     try:
-        return f"{recent_sentiment / len(stock_headlines[stock]):.2f}"  # average
+        return f"{recent_sentiment / len(sentiment_results):.2f}"  # average
     except ZeroDivisionError:
         return "Error - Stock not found"

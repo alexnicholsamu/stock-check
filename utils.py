@@ -6,8 +6,6 @@ import utils_sentiment
 
 end_date = date.today()
 start_date = end_date - timedelta(days=14)
-stock_data = {}
-stock_history = {}
 api_key = os.environ.get("API_KEY_FINANCIALS")
 
 
@@ -18,14 +16,13 @@ def get_stock_history(ticker):
     """
     stock = yf.Ticker(ticker)
     stock_table = stock.history(start=start_date, end=end_date)  # Can be edited for a longer or shorter range
-    stock_history[ticker] = stock_table
     try:
-        start_price = stock_history[ticker]["Open"][0]
+        start_price = stock_table["Open"][0]
     except IndexError:
         return "Error - Stock not found"
-    end_price = stock_history[ticker]["Close"][len(stock_history[ticker]["Close"]) - 1]  # Dataframe is sequential
-    return "${:.2f} total difference (from {:.2f} to {:.2f}), {:.2f}% change".format(
-        (end_price - start_price), start_price, end_price, (((end_price - start_price) / end_price) * 100))
+    end_price = stock_table["Close"][len(stock_table["Close"]) - 1]  # Dataframe is sequential
+    return f"${(end_price - start_price):.2f} total difference (from {start_price:.2f} to {end_price:.2f}), " \
+           f"{(((end_price - start_price) / end_price) * 100):.2f}% change"
 
 
 def get_ebit_ratio(stock_ticker):
@@ -38,7 +35,7 @@ def get_ebit_ratio(stock_ticker):
     if data_ebit:
         ebit_ratio = data_ebit[0]['ebitPerRevenue']
     else:
-        return "Error fetching EBIT ratio - Stock not found"
+        return "Error - Stock not found"
     return f"{ebit_ratio:.2f}"
 
 
@@ -52,7 +49,7 @@ def get_ebitda_ratio(stock_ticker):
     if data_ebitda:
         ebitda_ratio = data_ebitda[0]['ebitdaratio']
     else:
-        return "Error fetching EBITDA ratio - Stock not found"
+        return "Error - Stock not found"
     return f"{ebitda_ratio:.2f}"
 
 
@@ -69,7 +66,7 @@ def get_current_ratio(stock_ticker):
         assets = data_current_ratio[0]['totalAssets']
         current_ratio = assets/liabilities
     else:
-        return "Error fetching current ratio - Stock not found"
+        return "Error - Stock not found"
     return f"{current_ratio:.2f}"
 
 
@@ -100,11 +97,11 @@ def get_return_assets(stock_ticker):
     if data_income:
         net_income = data_income[0]['netIncome']
     else:
-        return "Error fetching return rates - Stock not found"
+        return "Error - Stock not found"
     if data_assets:
         total_assets = data_assets[0]['totalAssets']
     else:
-        return "Error fetching asset returns - Stock not found"
+        return "Error - Stock not found"
     return f"{(net_income/total_assets):.2f}"
 
 
@@ -121,11 +118,11 @@ def get_return_equity(stock_ticker):
     if data_income:
         net_income = data_income[0]['netIncome']
     else:
-        return "Error fetching return rates - Stock not found"
+        return "Error - Stock not found"
     if data_equity:
         stockholder_equity = data_equity[0]['totalStockholdersEquity']
     else:
-        return "Error fetching equity returns - Stock not found"
+        return "Error - Stock not found"
     return f"{(net_income/stockholder_equity):.2f}"
 
 
