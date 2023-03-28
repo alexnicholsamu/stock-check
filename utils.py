@@ -28,36 +28,49 @@ def get_stock_history(ticker):
         (end_price - start_price), start_price, end_price, (((end_price - start_price) / end_price) * 100))
 
 
-def get_ratios(stock_ticker):
+def get_ebit_ratio(stock_ticker):
     """
-    Grabs data from Financial Modeling API ratios, income statement, and balance sheet dataframes
-    :return: Returns EBIT ratio, EBITDA ratio, and Current Ratio
+    Grabs data from Financial Modeling API ratios dataframe
     """
     url_ebit = f'https://financialmodelingprep.com/api/v3/ratios/{stock_ticker}?apikey={api_key}'
     response_ebit = requests.get(url_ebit)
     data_ebit = response_ebit.json()
+    if data_ebit:
+        ebit_ratio = data_ebit[0]['ebitPerRevenue']
+    else:
+        return "Error fetching EBIT ratio - Stock not found"
+    return f"{ebit_ratio:.2f}"
+
+
+def get_ebitda_ratio(stock_ticker):
+    """
+    Grabs data from Financial Modeling API income statement dataframe
+    """
     url_ebitda = f'https://financialmodelingprep.com/api/v3/income-statement/{stock_ticker}?apikey={api_key}'
     response_ebitda = requests.get(url_ebitda)
     data_ebitda = response_ebitda.json()
+    if data_ebitda:
+        ebitda_ratio = data_ebitda[0]['ebitdaratio']
+    else:
+        return "Error fetching EBITDA ratio - Stock not found"
+    return f"{ebitda_ratio:.2f}"
+
+
+def get_current_ratio(stock_ticker):
+    """
+    Grabs data from Financial Modeling API balance sheet dataframe
+    """
     url_current_ratio = f'https://financialmodelingprep.com/api/v3/balance-sheet-statement/' \
                         f'{stock_ticker}?apikey={api_key}'
     response_current_ratio = requests.get(url_current_ratio)
     data_current_ratio = response_current_ratio.json()
-    if data_ebit:
-        ebit_ratio = data_ebit[0]['ebitPerRevenue']
-    else:
-        return "Error fetching ratios - Stock not found"
-    if data_ebitda:
-        ebitda_ratio = data_ebitda[0]['ebitdaratio']
-    else:
-        return "Error fetching ratios - Stock not found"
     if data_current_ratio:
         liabilities = data_current_ratio[0]['totalCurrentLiabilities']
         assets = data_current_ratio[0]['totalAssets']
         current_ratio = assets/liabilities
     else:
-        return "Error fetching ratios - Stock not found"
-    return f"{ebit_ratio:.2f}", f"{ebitda_ratio:.2f}", f"{current_ratio:.2f}"
+        return "Error fetching current ratio - Stock not found"
+    return f"{current_ratio:.2f}"
 
 
 def get_eps(stock_ticker):
@@ -74,46 +87,62 @@ def get_eps(stock_ticker):
         return "Error - Stock not found"
 
 
-def get_returns(stock_ticker):
+def get_return_assets(stock_ticker):
     """
     Grabs data from Financial Modeling API balance sheet and income statement dataframes
-    :return: formatted Return on Assets and Return on Equity
     """
     url_income = f'https://financialmodelingprep.com/api/v3/income-statement/{stock_ticker}?apikey={api_key}'
     response_income = requests.get(url_income)
     data_income = response_income.json()
-    url_returns = f'https://financialmodelingprep.com/api/v3/balance-sheet-statement/{stock_ticker}?apikey={api_key}'
-    response_returns = requests.get(url_returns)
-    data_returns = response_returns.json()
+    url_assets = f'https://financialmodelingprep.com/api/v3/balance-sheet-statement/{stock_ticker}?apikey={api_key}'
+    response_assets = requests.get(url_assets)
+    data_assets = response_assets.json()
     if data_income:
         net_income = data_income[0]['netIncome']
     else:
         return "Error fetching return rates - Stock not found"
-    if data_returns:
-        stockholder_equity = data_returns[0]['totalStockholdersEquity']
-        total_assets = data_returns[0]['totalAssets']
+    if data_assets:
+        total_assets = data_assets[0]['totalAssets']
+    else:
+        return "Error fetching asset returns - Stock not found"
+    return f"{(net_income/total_assets):.2f}"
+
+
+def get_return_equity(stock_ticker):
+    """
+    Grabs data from Financial Modeling API balance sheet and income statement dataframes
+    """
+    url_income = f'https://financialmodelingprep.com/api/v3/income-statement/{stock_ticker}?apikey={api_key}'
+    response_income = requests.get(url_income)
+    data_income = response_income.json()
+    url_equity = f'https://financialmodelingprep.com/api/v3/balance-sheet-statement/{stock_ticker}?apikey={api_key}'
+    response_equity = requests.get(url_equity)
+    data_equity = response_equity.json()
+    if data_income:
+        net_income = data_income[0]['netIncome']
     else:
         return "Error fetching return rates - Stock not found"
-    return f"{(net_income/total_assets):.2f}", f"{(net_income/stockholder_equity):.2f}"
+    if data_equity:
+        stockholder_equity = data_equity[0]['totalStockholdersEquity']
+    else:
+        return "Error fetching equity returns - Stock not found"
+    return f"{(net_income/stockholder_equity):.2f}"
 
 
 def get_stock_data(ticker):
     """
     Calls all util and utils_sentiment data and formats it into one dictionary, used in data_list
     """
-    ebit, ebitda, current = get_ratios(ticker)
-    return_on_assets, return_on_equity = get_returns(ticker)
-
     ticker_data = {
         "ticker": ticker,
         "history": get_stock_history(ticker),
         "headline_sentiment": utils_sentiment.get_headline_sentiment(ticker),
-        "ebit": ebit,
-        "ebitda": ebitda,
-        "current_ratio": current,
+        "ebit": get_ebit_ratio(ticker),
+        "ebitda": get_ebitda_ratio(ticker),
+        "current_ratio": get_current_ratio(ticker),
         "earnings_per_share": get_eps(ticker),
-        "return_on_assets": return_on_assets,
-        "return_on_equity": return_on_equity
+        "return_on_assets": get_return_assets(ticker),
+        "return_on_equity": get_return_equity(ticker)
     }
     return ticker_data
 
