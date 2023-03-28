@@ -6,7 +6,7 @@
 
 > GPT-4 by OpenAI
  
-> PyTorch, BeautifulSoup4, yfinance, FLASK, gunicorn 
+> PyTorch, BeautifulSoup4, yfinance, FLASK
 
 ## Summary:
 
