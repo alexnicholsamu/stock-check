@@ -17,6 +17,9 @@ equity
 
 ![SampleImage](static/sampleimage.png)
 
+
+_sample image, 03.29.23_
+
 Using the _Financial Modeling Prep API_ and _yfinance_, I gather stock data from their balance sheets, income statements, 
 and Yahoo! Finance. I also use a pretrained sentiment analysis neural network, called _distilbert_, to analyze stock 
 headlines and provide a sentiment score. 
