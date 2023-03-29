@@ -13,6 +13,8 @@
 This is my stock dashboard, where with the input of stock ticker(s) of interest, a user will get access to a full 
 wealth of formatted and calculated data of which to make decisions about the stock(s)
 
+![SampleImage](static/sampleimage.png)
+
 Using the _Financial Modeling Prep API_ and _yfinance_, I gather stock data from their balance sheets, income statements, 
 and Yahoo! Finance. I also use a pretrained sentiment analysis neural network, called _distilbert_, to analyze stock 
 headlines and provide a sentiment score. 
