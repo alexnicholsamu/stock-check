@@ -15,7 +15,10 @@ wealth of formatted and calculated data of which to make decisions about the sto
 Two-week history, recent headline sentiment, EBIT, EBITDA, current ratio, earnings per share, return on assets, return on 
 equity
 
+
 ![SampleImage](static/sampleimage.png)
+
+_sample image, 03.29.23_
 
 Using the _Financial Modeling Prep API_ and _yfinance_, I gather stock data from their balance sheets, income statements, 
 and Yahoo! Finance. I also use a pretrained sentiment analysis neural network, called _distilbert_, to analyze stock 
