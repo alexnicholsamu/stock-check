@@ -64,7 +64,10 @@ def get_current_ratio(stock_ticker):
     if data_current_ratio:
         liabilities = data_current_ratio[0]['totalCurrentLiabilities']
         assets = data_current_ratio[0]['totalAssets']
-        current_ratio = assets/liabilities
+        try:
+            current_ratio = assets/liabilities
+        except ZeroDivisionError:
+            return "Stock does not report liabilities / no liabilities could be pulled"
     else:
         return "Error - Stock not found"
     return f"{current_ratio:.2f}"
