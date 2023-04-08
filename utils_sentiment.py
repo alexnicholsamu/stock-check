@@ -1,18 +1,8 @@
-from transformers import PegasusTokenizer, PegasusForConditionalGeneration, pipeline
+from transformers import pipeline
 import torch
 
-model_name = "human-centered-summarization/financial-summarization-pegasus"
-tokenizer = PegasusTokenizer.from_pretrained(model_name)
-model = PegasusForConditionalGeneration.from_pretrained(model_name)
 sentiment_classifier = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english",
                                 device=torch.device("cuda" if torch.cuda.is_available() else "cpu"))
-
-
-def summarize(summarize_text):
-    input_ids = tokenizer.encode("summarize: " + summarize_text, return_tensors="pt", max_length=2048, truncation=True)
-    summary_ids = model.generate(input_ids, num_beams=4, max_length=100, early_stopping=True, temperature=1.0)
-    summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
-    return summary
 
 
 def analyze_headlines(headlines):
@@ -66,9 +56,9 @@ def get_headline_sentiment(headlines):
         recent_sentiment += pos_neg * data['score']
     try:
         return {"sentiment_score": f"{recent_sentiment / len(sentiment_results):.2f}",
-                "most_positive_headline": summarize(get_most_positive(sentiment_results)['headline']),
+                "most_positive_headline": get_most_positive(sentiment_results)['headline'],
                 "most_positive_score": f"{get_most_positive(sentiment_results)['score']:.2f}",
-                "most_negative_headline": summarize(get_most_negative(sentiment_results)['headline']),
+                "most_negative_headline": get_most_negative(sentiment_results)['headline'],
                 "most_negative_score": f"{get_most_negative(sentiment_results)['score']:.2f}"
                 }
     except ZeroDivisionError:
