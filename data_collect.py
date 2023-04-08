@@ -62,10 +62,9 @@ def get_stock_sentiment(ticker):
     headlines = get_headlines(ticker)
     data = utils_sentiment.get_headline_sentiment(headlines)
     try:
-        errorvar = data["sentiment_score"]
-        errorvar = float(errorvar)
+        sentiment_score = data["sentiment_score"]
     except TypeError:
-        ticker_data = {
+        return {
             "ticker": ticker,
             "analysis_type": "sentiment",
             "headline_sentiment": "Error - Stock not found",
@@ -74,18 +73,14 @@ def get_stock_sentiment(ticker):
             "most_negative_headline": "Error - Stock not found",
             "most_negative_score": "Error - Stock not found"
         }
-        errorvar = "This stock doesn't exist"
-    print(errorvar)
-    print(type(errorvar))
-    if not type(errorvar) == str:
-        ticker_data = {
-            "ticker": ticker,
-            "analysis_type": "sentiment",
-            "headline_sentiment": data["sentiment_score"],
-            "most_positive_headline": data["most_positive_headline"],
-            "most_positive_score": data["most_positive_score"],
-            "most_negative_headline": data["most_negative_headline"],
-            "most_negative_score": data["most_negative_score"]
+    ticker_data = {
+        "ticker": ticker,
+        "analysis_type": "sentiment",
+        "headline_sentiment": sentiment_score,
+        "most_positive_headline": data["most_positive_headline"],
+        "most_positive_score": data["most_positive_score"],
+        "most_negative_headline": data["most_negative_headline"],
+        "most_negative_score": data["most_negative_score"]
         }
     return ticker_data
 
