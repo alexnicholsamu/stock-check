@@ -21,53 +21,22 @@ def data_call(ticker):
             "Ratios": data_company_ratios}
 
 
-def get_article_body(article_soup):
-    article_body = article_soup.find('article')
-    if article_body:
-        return article_body.get_text()
-    else:
-        return None
-
-
-def get_articles(stock):
+def get_headlines(stock):
     base_url = f"https://finance.yahoo.com/quote/{stock}?p={stock}"
     page = requests.get(base_url)
 
     soup = BeautifulSoup(page.content, "html.parser")
     headline_elements = soup.find_all("h3", class_="Mb(5px)")
 
-    articles = []
+    headlines = []
     for element in headline_elements:
-        article_url = element.find("a")["href"]
-
-        # Check if URL is relative and convert it to absolute
-        if article_url.startswith("/"):
-            article_url = "https://finance.yahoo.com" + article_url
-
-        article_page = requests.get(article_url)
-        article_soup = BeautifulSoup(article_page.content, "html.parser")
-
-        # Headline
         if element.text:
             headline = element.text
         else:
             headline = "Error - Stock not found"
+        headlines.append(headline)
 
-        # Body text
-        body_text = get_article_body(article_soup)
-        if body_text is not None:
-            body_text = body_text.strip()
-        elif not headline == "Error - Stock not found":
-            body_text = "This article is a Banner article, i.e. no body text"
-        else:
-            body_text = "Error - Stock not found"
-
-        articles.append({
-            "headline": headline,
-            "body_text": body_text
-        })
-
-    return articles
+    return headlines
 
 
 def get_stock_data(ticker):
@@ -90,17 +59,34 @@ def get_stock_data(ticker):
 
 
 def get_stock_sentiment(ticker):
-    articles = get_articles(ticker)
-    data = utils_sentiment.get_headline_sentiment(articles)
-    ticker_data = {
-        "ticker": ticker,
-        "analysis_type": "sentiment",
-        "headline_sentiment": data["sentiment_score"],
-        "most_positive_headline": data["most_positive_headline"],
-        "most_positive_score": data["most_positive_score"],
-        "most_negative_headline": data["most_negative_headline"],
-        "most_negative_score": data["most_negative_score"]
-    }
+    headlines = get_headlines(ticker)
+    data = utils_sentiment.get_headline_sentiment(headlines)
+    try:
+        errorvar = data["sentiment_score"]
+        errorvar = float(errorvar)
+    except TypeError:
+        ticker_data = {
+            "ticker": ticker,
+            "analysis_type": "sentiment",
+            "headline_sentiment": "Error - Stock not found",
+            "most_positive_headline": "Error - Stock not found",
+            "most_positive_score": "Error - Stock not found",
+            "most_negative_headline": "Error - Stock not found",
+            "most_negative_score": "Error - Stock not found"
+        }
+        errorvar = "This stock doesn't exist"
+    print(errorvar)
+    print(type(errorvar))
+    if not type(errorvar) == str:
+        ticker_data = {
+            "ticker": ticker,
+            "analysis_type": "sentiment",
+            "headline_sentiment": data["sentiment_score"],
+            "most_positive_headline": data["most_positive_headline"],
+            "most_positive_score": data["most_positive_score"],
+            "most_negative_headline": data["most_negative_headline"],
+            "most_negative_score": data["most_negative_score"]
+        }
     return ticker_data
 
 

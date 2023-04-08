@@ -55,11 +55,7 @@ def get_most_positive(sentiments):
             }
 
 
-def get_headline_sentiment(articles):
-    headlines = []
-    for element in articles:
-        headlines.append(element["headline"])
-
+def get_headline_sentiment(headlines):
     sentiment_results = analyze_headlines(headlines)
     recent_sentiment = 0
     for data in sentiment_results:
