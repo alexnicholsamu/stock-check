@@ -86,6 +86,7 @@
             cursor: pointer;
             display: block;
             margin: 0 auto;
+            margin-top: 30px;
         }
 
         button:hover {
@@ -121,6 +122,16 @@
             padding-top: 10px;
         }
 
+        .form-group {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        select {
+            font-size: 1.0rem;
+            padding: 6px;
+        }
+
     </style>
 </head>
 <body>
@@ -130,8 +141,17 @@
             <h1>Stock Analysis Dashboard</h1>
         </header>
         <form action="/" method="post">
-            <label for="ticker">Enter Ticker Symbol(s), separated by ','</label>
-            <input type="text" id="ticker" name="ticker" required><br>
+            <div class="form-group">
+                <label for="ticker">Enter Ticker Symbol(s), separated by ','</label>
+                <input type="text" id="ticker" name="ticker" required>
+            </div>
+            <div class="form-group">
+                <label for="analysisType">Select Information Type</label>
+                <select name="analysisType" id="analysisType">
+                    <option value="data">Data</option>
+                    <option value="sentiment">Sentiment Analysis</option>
+                </select>
+            </div>
             <button type="submit">Submit</button>
         </form>
         {% for data in data_list %}
@@ -140,14 +160,21 @@
                 <h5 class="ticker-title">{{ data.ticker }}</h5>
                 <div class="card-content">
                     <p class="card-text">
-                    Two-Week Stock History: {{ data.history }}<br>
-                    Recent Headline Sentiment: {{ data.headline_sentiment }}<br>
-                    EBIT: {{ data.ebit }}<br>
-                    EBITDA: {{ data.ebitda }}<br>
-                    Current Ratio: {{ data.current_ratio }}<br>
-                    Earnings per Share: {{ data.earnings_per_share }}<br>
-                    Return on Assets: {{ data.return_on_assets }}<br>
-                    Return on Equity: {{ data.return_on_equity }}
+                    {% if data.analysis_type == "data" %}
+                        Two-Week Stock History: {{ data.history }}<br>
+                        EBIT: {{ data.ebit }}<br>
+                        EBITDA: {{ data.ebitda }}<br>
+                        Current Ratio: {{ data.current_ratio }}<br>
+                        Earnings per Share: {{ data.earnings_per_share }}<br>
+                        Return on Assets: {{ data.return_on_assets }}<br>
+                        Return on Equity: {{ data.return_on_equity }}
+                    {% elif data.analysis_type == "sentiment" %}
+                        Headline Sentiment: {{ data.headline_sentiment }}<br>
+                        Summary of Most Positive Headline: {{ data.most_positive_headline }}<br>
+                        Most Positive Score: {{ data.most_positive_score }}<br>
+                        Summary of Most Negative Headline: {{ data.most_negative_headline }}<br>
+                        Most Negative Score: {{ data.most_negative_score }}
+                    {% endif %}
                     </p>
                 </div>
             </div>
