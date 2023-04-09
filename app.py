@@ -9,7 +9,7 @@ app.config.from_object(config)
 @app.route("/", methods=["GET", "POST"])
 def dashboard():
     """
-    Master method, gathers data from utils and formats it into cards to be displayed on the dashboard
+    Master method, takes input from submission and formats chosen data into cards to be displayed on the dashboard
     """
     data_list = []
     if request.method == "POST":

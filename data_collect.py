@@ -6,6 +6,9 @@ from bs4 import BeautifulSoup
 
 
 def data_call(ticker):
+    """
+    :return: use financial modeling prep api to access income statement, balance sheet, and relevant ratios for a stock
+    """
     api_key = os.environ.get("API_KEY_FINANCIALS")
     url_income_statement = f'https://financialmodelingprep.com/api/v3/income-statement/{ticker}?apikey={api_key}'
     response_income_statement = requests.get(url_income_statement)
@@ -22,6 +25,9 @@ def data_call(ticker):
 
 
 def get_headlines(stock):
+    """
+    :return: scrapes headlines from Yahoo! Finance using beautifulsoup4
+    """
     base_url = f"https://finance.yahoo.com/quote/{stock}?p={stock}"
     page = requests.get(base_url)
 
@@ -41,7 +47,7 @@ def get_headlines(stock):
 
 def get_stock_data(ticker):
     """
-    Calls all util data and formats it into one dictionary, used in data_list
+    Calls all utils data and formats it into one dictionary
     """
     company_data = data_call(ticker)
     ticker_data = {
@@ -59,11 +65,14 @@ def get_stock_data(ticker):
 
 
 def get_stock_sentiment(ticker):
+    """
+    Calls all utils_sentiment data
+    """
     headlines = get_headlines(ticker)
     data = utils_sentiment.get_headline_sentiment(headlines)
     try:
         sentiment_score = data["sentiment_score"]
-    except TypeError:
+    except TypeError:  # If the stock is invalid, data["sentiment_score"] will throw a TypeError
         return {
             "ticker": ticker,
             "analysis_type": "sentiment",
@@ -92,7 +101,6 @@ def get_stock_sentiment(ticker):
 def get_tickers(tickers):
     """
     Separate tickers by comma, make them all uppercase, strip the spaces, and remove non-alphabetic characters
-    :return: List format of tickers, in the form of ['AAPL','GOOG', etc]
     """
     ticker_list = [''.join(char for char in ticker.strip().upper() if char.isalpha()) for ticker in tickers.split(',')]
     return ticker_list
