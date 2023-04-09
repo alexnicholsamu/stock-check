@@ -70,9 +70,10 @@ def get_stock_sentiment(ticker):
             "headline_sentiment": "Error - Stock not found",
             "most_positive_headline": "Error - Stock not found",
             "most_positive_score": "Error - Stock not found",
+            "most_positive_headline_summary": "Error - Stock not found",
             "most_negative_headline": "Error - Stock not found",
             "most_negative_score": "Error - Stock not found",
-            "headline_summary": "Error - Stock not found"
+            "most_negative_headline_summary": "Error - Stock not found"
         }
     ticker_data = {
         "ticker": ticker,
@@ -80,9 +81,10 @@ def get_stock_sentiment(ticker):
         "headline_sentiment": sentiment_score,
         "most_positive_headline": data["most_positive_headline"],
         "most_positive_score": data["most_positive_score"],
+        "most_positive_headline_summary": data["most_positive_headline_summary"],
         "most_negative_headline": data["most_negative_headline"],
         "most_negative_score": data["most_negative_score"],
-        "headline_summary": data["headline_summary"]
+        "most_negative_headline_summary": data["most_negative_headline_summary"]
         }
     return ticker_data
 

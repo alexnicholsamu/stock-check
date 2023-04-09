@@ -8,10 +8,9 @@ tokenizer = PegasusTokenizer.from_pretrained(model_name)
 model = PegasusForConditionalGeneration.from_pretrained(model_name)
 
 
-def summarize(headlines):
-    summarize_text = ' '.join(headlines)
-    input_ids = tokenizer.encode("summarize: " + summarize_text, return_tensors="pt", max_length=2048, truncation=True)
-    summary_ids = model.generate(input_ids, num_beams=8, min_length=50, max_length=256, early_stopping=True,
+def summarize(headline):
+    input_ids = tokenizer.encode("summarize: " + headline, return_tensors="pt", max_length=2048, truncation=True)
+    summary_ids = model.generate(input_ids, num_beams=4, min_length=16, max_length=48, early_stopping=True,
                                  temperature=1.0)
     summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
     return summary
@@ -71,9 +70,10 @@ def get_headline_sentiment(headlines):
         return {"sentiment_score": f"{recent_sentiment / len(sentiment_results):.2f}",
                 "most_positive_headline": get_most_positive(sentiment_results)['headline'],
                 "most_positive_score": f"{get_most_positive(sentiment_results)['score']:.2f}",
+                "most_positive_headline_summary": summarize(get_most_positive(sentiment_results)['headline']),
                 "most_negative_headline": get_most_negative(sentiment_results)['headline'],
                 "most_negative_score": f"{get_most_negative(sentiment_results)['score']:.2f}",
-                "headline_summary": summarize(headlines)
+                "most_negative_headline_summary": summarize(get_most_negative(sentiment_results)['headline'])
                 }
     except ZeroDivisionError:
         return "Error - Stock not found"
