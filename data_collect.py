@@ -41,7 +41,7 @@ def get_headlines(stock):
 
 def get_stock_data(ticker):
     """
-    Calls all util and utils_sentiment data and formats it into one dictionary, used in data_list
+    Calls all util data and formats it into one dictionary, used in data_list
     """
     company_data = data_call(ticker)
     ticker_data = {
@@ -71,7 +71,8 @@ def get_stock_sentiment(ticker):
             "most_positive_headline": "Error - Stock not found",
             "most_positive_score": "Error - Stock not found",
             "most_negative_headline": "Error - Stock not found",
-            "most_negative_score": "Error - Stock not found"
+            "most_negative_score": "Error - Stock not found",
+            "headline_summary": "Error - Stock not found"
         }
     ticker_data = {
         "ticker": ticker,
@@ -80,7 +81,8 @@ def get_stock_sentiment(ticker):
         "most_positive_headline": data["most_positive_headline"],
         "most_positive_score": data["most_positive_score"],
         "most_negative_headline": data["most_negative_headline"],
-        "most_negative_score": data["most_negative_score"]
+        "most_negative_score": data["most_negative_score"],
+        "headline_summary": data["headline_summary"]
         }
     return ticker_data
 

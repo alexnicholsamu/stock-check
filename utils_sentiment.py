@@ -1,8 +1,20 @@
-from transformers import pipeline
+from transformers import pipeline, PegasusTokenizer, PegasusForConditionalGeneration
 import torch
 
 sentiment_classifier = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english",
                                 device=torch.device("cuda" if torch.cuda.is_available() else "cpu"))
+model_name = "human-centered-summarization/financial-summarization-pegasus"
+tokenizer = PegasusTokenizer.from_pretrained(model_name)
+model = PegasusForConditionalGeneration.from_pretrained(model_name)
+
+
+def summarize(headlines):
+    summarize_text = ' '.join(headlines)
+    input_ids = tokenizer.encode("summarize: " + summarize_text, return_tensors="pt", max_length=2048, truncation=True)
+    summary_ids = model.generate(input_ids, num_beams=8, min_length=50, max_length=256, early_stopping=True,
+                                 temperature=1.0)
+    summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+    return summary
 
 
 def analyze_headlines(headlines):
@@ -46,6 +58,7 @@ def get_most_positive(sentiments):
 
 
 def get_headline_sentiment(headlines):
+    print(headlines)
     sentiment_results = analyze_headlines(headlines)
     recent_sentiment = 0
     for data in sentiment_results:
@@ -59,7 +72,8 @@ def get_headline_sentiment(headlines):
                 "most_positive_headline": get_most_positive(sentiment_results)['headline'],
                 "most_positive_score": f"{get_most_positive(sentiment_results)['score']:.2f}",
                 "most_negative_headline": get_most_negative(sentiment_results)['headline'],
-                "most_negative_score": f"{get_most_negative(sentiment_results)['score']:.2f}"
+                "most_negative_score": f"{get_most_negative(sentiment_results)['score']:.2f}",
+                "headline_summary": summarize(headlines)
                 }
     except ZeroDivisionError:
         return "Error - Stock not found"
