@@ -82,14 +82,16 @@ def get_headline_sentiment(headlines):
         else:
             pos_neg = 1  # all positive sentiment are given a value of score * 1
         recent_sentiment += pos_neg * data['score']
+    pos_results = get_most_positive(sentiment_results)
+    neg_results = get_most_negative(sentiment_results)
     try:
         return {"sentiment_score": f"{recent_sentiment / len(sentiment_results):.2f}",
-                "most_positive_headline": get_most_positive(sentiment_results)['headline'],
-                "most_positive_score": f"{get_most_positive(sentiment_results)['score']:.2f}",
-                "most_positive_headline_summary": summarize(get_most_positive(sentiment_results)['headline']),
-                "most_negative_headline": get_most_negative(sentiment_results)['headline'],
-                "most_negative_score": f"{get_most_negative(sentiment_results)['score']:.2f}",
-                "most_negative_headline_summary": summarize(get_most_negative(sentiment_results)['headline'])
+                "most_positive_headline": pos_results['headline'],
+                "most_positive_score": f"{pos_results['score']:.2f}",
+                "most_positive_headline_summary": summarize(pos_results['headline']),
+                "most_negative_headline": neg_results['headline'],
+                "most_negative_score": f"{neg_results['score']:.2f}",
+                "most_negative_headline_summary": summarize(neg_results['headline'])
                 }
     except ZeroDivisionError:
         return "Error - Stock not found"  # If the stock ticker isn't valid, len(sentiment_results) will be 0
