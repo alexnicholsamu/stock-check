@@ -1,7 +1,7 @@
 import requests
 import os
-import utils
-import utils_sentiment
+import number_data
+import sentiment_summary
 from bs4 import BeautifulSoup
 
 
@@ -53,13 +53,13 @@ def get_stock_data(ticker):
     ticker_data = {
         "ticker": ticker,
         "analysis_type": "data",
-        "history": utils.get_stock_history(ticker),
-        "ebit": utils.get_ebit_ratio(company_data["Ratios"]),
-        "ebitda": utils.get_ebitda_ratio(company_data["Income Statement"]),
-        "current_ratio": utils.get_current_ratio(company_data["Balance Sheet"]),
-        "earnings_per_share": utils.get_eps(company_data["Income Statement"]),
-        "return_on_assets": utils.get_return_assets(company_data["Income Statement"], company_data["Balance Sheet"]),
-        "return_on_equity": utils.get_return_equity(company_data["Income Statement"], company_data["Balance Sheet"])
+        "history": number_data.get_stock_history(ticker),
+        "ebit": number_data.get_ebit_ratio(company_data["Ratios"]),
+        "ebitda": number_data.get_ebitda_ratio(company_data["Income Statement"]),
+        "current_ratio": number_data.get_current_ratio(company_data["Balance Sheet"]),
+        "earnings_per_share": number_data.get_eps(company_data["Income Statement"]),
+        "return_on_assets": number_data.get_return_assets(company_data["Income Statement"], company_data["Balance Sheet"]),
+        "return_on_equity": number_data.get_return_equity(company_data["Income Statement"], company_data["Balance Sheet"])
     }
     return ticker_data
 
@@ -69,7 +69,7 @@ def get_stock_sentiment(ticker):
     Calls all utils_sentiment data
     """
     headlines = get_headlines(ticker)
-    data = utils_sentiment.get_headline_sentiment(headlines)
+    data = sentiment_summary.get_headline_sentiment(headlines)
     try:
         sentiment_score = data["sentiment_score"]
     except TypeError:  # If the stock is invalid, data["sentiment_score"] will throw a TypeError
