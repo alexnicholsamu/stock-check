@@ -3,8 +3,6 @@
 ## Tools used in the creation of this project:
 
 > [Financial Modeling Prep API](https://site.financialmodelingprep.com/) 
-
-> GPT-4 by OpenAI
  
 > PyTorch, BeautifulSoup4, yfinance, FLASK
 
