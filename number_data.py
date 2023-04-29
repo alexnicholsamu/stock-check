@@ -100,6 +100,9 @@ def get_return_equity(data_income, data_equity):
 
 
 def get_debt_equity(data_balance):
+    """
+    Grabs data from Financial Modeling API balance sheet dataframes
+    """
     if data_balance:
         liabilities = data_balance[0]['totalLiabilities']
         stockholderequity = data_balance[0]['totalStockholdersEquity']
@@ -109,6 +112,9 @@ def get_debt_equity(data_balance):
 
 
 def get_opcash_flow(data_cash_flow):
+    """
+    Grabs data from Financial Modeling API cash flow dataframes
+    """
     if data_cash_flow:
         opcash_flow = data_cash_flow[0]['operatingCashFlow']
     else:
@@ -117,13 +123,16 @@ def get_opcash_flow(data_cash_flow):
 
 
 def get_div_yield(data_bal, data_cash, ticker):
+    """
+    Grabs data from Financial Modeling API balance sheet and cash flow dataframes
+    """
     if data_bal:
         stock_num = data_bal[0]['commonStock']
     else:
         return "Error - Stock not found"
     if data_cash:
         div_paid = data_cash[0]['dividendsPaid']*-1
-        if div_paid == 0:
+        if div_paid == 0:  # If the stock doesn't pay dividends
             return "0.00%"
     else:
         return "Error - Stock not found"
