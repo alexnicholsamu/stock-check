@@ -7,3 +7,4 @@ __pycache__/
 *.sqlite
 .env
 future_code.py
+update_steps.txt

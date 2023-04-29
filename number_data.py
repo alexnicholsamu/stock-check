@@ -97,3 +97,38 @@ def get_return_equity(data_income, data_equity):
     else:
         return "Error - Stock not found"
     return f"{(net_income/stockholder_equity):.2f}"
+
+
+def get_debt_equity(data_balance):
+    if data_balance:
+        liabilities = data_balance[0]['totalLiabilities']
+        stockholderequity = data_balance[0]['totalStockholdersEquity']
+    else:
+        return "Error - Stock not found"
+    return f"{liabilities/stockholderequity:.2f}"
+
+
+def get_opcash_flow(data_cash_flow):
+    if data_cash_flow:
+        opcash_flow = data_cash_flow[0]['operatingCashFlow']
+    else:
+        return "Error - Stock not found"
+    return f"{opcash_flow}"
+
+
+def get_div_yield(data_bal, data_cash, ticker):
+    if data_bal:
+        stock_num = data_bal[0]['commonStock']
+    else:
+        return "Error - Stock not found"
+    if data_cash:
+        div_paid = data_cash[0]['dividendsPaid']*-1
+        if div_paid == 0:
+            return "0.00%"
+    else:
+        return "Error - Stock not found"
+    ticker_data = yf.Ticker(ticker)
+    todays_data = ticker_data.history(period='1d')
+    curr_price = todays_data['Close'][0]
+    dps = div_paid / stock_num
+    return f"{((dps/curr_price)*100):.2f}%"

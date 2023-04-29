@@ -50,7 +50,7 @@
             text-align: center;
             font-family: "Times New Roman", Times, serif;
             font-size: 2rem;
-            color: #000; /* Black text color */
+            color: #000; 
             margin: 0;
         }
 
@@ -167,7 +167,10 @@
                         Current Ratio: {{ data.current_ratio }}<br>
                         Earnings per Share: {{ data.earnings_per_share }}<br>
                         Return on Assets: {{ data.return_on_assets }}<br>
-                        Return on Equity: {{ data.return_on_equity }}
+                        Return on Equity: {{ data.return_on_equity }}<br>
+                        Debt-to-Equity Ratio: {{data.debt_equity_ratio}}<br>
+                        Operating Cash Flow: {{data.op_cash_flow}}<br>
+                        Dividend Yield: {{data.dividend_yield}}
                     {% elif data.analysis_type == "sentiment" %}
                         Headline Sentiment: {{ data.headline_sentiment }}<br>
                         Most Positive Headline: {{ data.most_positive_headline }}<br>

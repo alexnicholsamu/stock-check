@@ -19,9 +19,13 @@ def data_call(ticker):
     url_company_ratios = f'https://financialmodelingprep.com/api/v3/ratios/{ticker}?apikey={api_key}'
     response_company_ratios = requests.get(url_company_ratios)
     data_company_ratios = response_company_ratios.json()
+    url_cash_flow = f'https://financialmodelingprep.com/api/v3/cash-flow-statement/{ticker}?apikey={api_key}'
+    response_cash_flow = requests.get(url_cash_flow)
+    data_cash_flow = response_cash_flow.json()
     return {"Balance Sheet": data_balance_sheet,
             "Income Statement": data_income_statement,
-            "Ratios": data_company_ratios}
+            "Ratios": data_company_ratios,
+            "Cash Flow": data_cash_flow}
 
 
 def get_headlines(stock):
@@ -59,7 +63,10 @@ def get_stock_data(ticker):
         "current_ratio": number_data.get_current_ratio(company_data["Balance Sheet"]),
         "earnings_per_share": number_data.get_eps(company_data["Income Statement"]),
         "return_on_assets": number_data.get_return_assets(company_data["Income Statement"], company_data["Balance Sheet"]),
-        "return_on_equity": number_data.get_return_equity(company_data["Income Statement"], company_data["Balance Sheet"])
+        "return_on_equity": number_data.get_return_equity(company_data["Income Statement"], company_data["Balance Sheet"]),
+        "debt_equity_ratio": number_data.get_debt_equity(company_data["Balance Sheet"]),
+        "op_cash_flow": number_data.get_opcash_flow(company_data["Cash Flow"]),
+        "dividend_yield": number_data.get_div_yield(company_data["Balance Sheet"], company_data["Cash Flow"], ticker)
     }
     return ticker_data
 
