@@ -2,6 +2,7 @@ import requests
 import os
 import number_data
 import sentiment_summary
+import yfinance as yf
 from bs4 import BeautifulSoup
 
 
@@ -49,13 +50,18 @@ def get_headlines(stock):
     return headlines
 
 
+def get_company_name(ticker_symbol):
+    ticker = yf.Ticker(ticker_symbol)
+    return ticker.info['longName']
+
+
 def get_stock_data(ticker):
     """
     Calls all utils data and formats it into one dictionary
     """
     company_data = data_call(ticker)
     ticker_data = {
-        "ticker": ticker,
+        "ticker": get_company_name(ticker),
         "analysis_type": "data",
         "history": number_data.get_stock_history(ticker),
         "ebit": number_data.get_ebit_ratio(company_data["Ratios"]),

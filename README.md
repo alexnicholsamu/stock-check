@@ -21,3 +21,9 @@ The licence can be found in [LICENSE](LICENSE.md). This can only be hosted local
 All provided files are necessary to run this.
 
 Future work includes providing more data, as well as the website improvements. Any questions or suggestions should be emailed to _alexander.k.nichols@gmail.com_.
+
+Sample Images for Veeva Systems (VEEV) Data and Sentiment (_29/04/23_)
+
+![Sample Data Image](./images/sampledataimage.png)
+
+![Sample Data Image](./images/samplesentimentimage.png)
