@@ -20,17 +20,6 @@ def get_stock_history(ticker):
            f"{(((end_price - start_price) / end_price) * 100):.2f}% change"
 
 
-def get_ebit_ratio(data_ebit):
-    """
-    Grabs data from Financial Modeling API ratios dataframe
-    """
-    if data_ebit:
-        ebit_ratio = data_ebit[0]['ebitPerRevenue']
-    else:
-        return "Error - Stock not found"
-    return f"{ebit_ratio:.2f}"
-
-
 def get_ebitda_ratio(data_ebitda):
     """
     Grabs data from Financial Modeling API income statement dataframe

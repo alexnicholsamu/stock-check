@@ -10,22 +10,18 @@ def data_call(ticker):
     """
     :return: use financial modeling prep api to access income statement, balance sheet, and relevant ratios for a stock
     """
-    api_key = os.environ.get("API_KEY_FINANCIALS")
-    url_income_statement = f'https://financialmodelingprep.com/api/v3/income-statement/{ticker}?apikey={api_key}'
+    api_key = os.environ.get("API_KEY_FINANCIALS") # change link formatting, check api docs
+    url_income_statement = f'https://financialmodelingprep.com/api/v3/income-statement/{ticker}?limit=120&apikey={api_key}'
     response_income_statement = requests.get(url_income_statement)
     data_income_statement = response_income_statement.json()
-    url_balance_sheet = f'https://financialmodelingprep.com/api/v3/balance-sheet-statement/{ticker}?apikey={api_key}'
+    url_balance_sheet = f'https://financialmodelingprep.com/api/v3/balance-sheet-statement/{ticker}?apikey={api_key}&limit=120'
     response_balance_sheet = requests.get(url_balance_sheet)
     data_balance_sheet = response_balance_sheet.json()
-    url_company_ratios = f'https://financialmodelingprep.com/api/v3/ratios/{ticker}?apikey={api_key}'
-    response_company_ratios = requests.get(url_company_ratios)
-    data_company_ratios = response_company_ratios.json()
-    url_cash_flow = f'https://financialmodelingprep.com/api/v3/cash-flow-statement/{ticker}?apikey={api_key}'
+    url_cash_flow = f'https://financialmodelingprep.com/api/v3/cash-flow-statement/{ticker}?apikey={api_key}&limit=120'
     response_cash_flow = requests.get(url_cash_flow)
     data_cash_flow = response_cash_flow.json()
     return {"Balance Sheet": data_balance_sheet,
             "Income Statement": data_income_statement,
-            "Ratios": data_company_ratios,
             "Cash Flow": data_cash_flow}
 
 
@@ -64,7 +60,6 @@ def get_stock_data(ticker):
         "ticker": get_company_name(ticker),
         "analysis_type": "data",
         "history": number_data.get_stock_history(ticker),
-        "ebit": number_data.get_ebit_ratio(company_data["Ratios"]),
         "ebitda": number_data.get_ebitda_ratio(company_data["Income Statement"]),
         "current_ratio": number_data.get_current_ratio(company_data["Balance Sheet"]),
         "earnings_per_share": number_data.get_eps(company_data["Income Statement"]),
